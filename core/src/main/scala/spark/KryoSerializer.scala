@@ -3,7 +3,7 @@ package spark
 import java.io._
 import java.nio.ByteBuffer
 import com.twitter.chill.KryoBijection
-import com.esotericsoftware.kryo.Kryo
+import com.esotericsoftware.kryo.{Kryo, KryoException}
 import com.esotericsoftware.kryo.io.{Input => KryoInput, Output => KryoOutput}
 import com.esotericsoftware.kryo.serializers.{JavaSerializer => KryoJavaSerializer}
 import serializer.{SerializerInstance, DeserializationStream, SerializationStream}
@@ -30,9 +30,7 @@ private[spark] class KryoDeserializationStream(kryo: Kryo, inStream: InputStream
       kryo.readClassAndObject(input).asInstanceOf[T]
     } catch {
       // DeserializationStream uses the EOF exception to indicate stopping condition.
-      case e: com.esotericsoftware.kryo.KryoException =>
-        println("Kryo error: %s".format(e))
-        throw new java.io.EOFException
+      case _: KryoException => throw new EOFException
     }
   }
 
