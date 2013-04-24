@@ -85,8 +85,8 @@ trait KryoRegistrator {
 /**
  * A Spark serializer that uses the [[http://code.google.com/p/kryo/wiki/V1Documentation Kryo 1.x library]].
  */
-private[spark] class KryoSerializer extends spark.serializer.Serializer with Logging {
-  val bufferSize = System.getProperty("spark.kryoserializer.buffer.mb", "2").toInt * 1024 * 1024
+class KryoSerializer extends spark.serializer.Serializer with Logging {
+  private val bufferSize = System.getProperty("spark.kryoserializer.buffer.mb", "2").toInt * 1024 * 1024
 
   def newOutput(): KryoOutput = new KryoOutput(bufferSize)
 
