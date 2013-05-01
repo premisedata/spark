@@ -147,7 +147,7 @@ object SparkBuild extends Build {
       "cc.spray" % "spray-server" % "1.0-M2.1",
       "cc.spray" % "spray-json_2.9.2" % "1.1.1",
       "org.apache.mesos" % "mesos" % "0.9.0-incubating",
-      "com.twitter" % "chill_2.9.2" % "0.2.3-SNAPSHOT"
+      "com.twitter" % "chill_2.9.2" % "0.2.2"
     ) ++ (if (HADOOP_MAJOR_VERSION == "2") Some("org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION) else None).toSeq,
     unmanagedSourceDirectories in Compile <+= baseDirectory{ _ / ("src/hadoop" + HADOOP_MAJOR_VERSION + "/scala") }
   ) ++ assemblySettings ++ extraAssemblySettings ++ Twirl.settings

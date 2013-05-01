@@ -33,6 +33,7 @@ class KryoSerializerSuite extends FunSuite {
     check(Array(true, false, true))
     check(Array('a', 'b', 'c'))
     check(Array[Int]())
+    check(Array(Array("1", "2"), Array("1", "2", "3", "4")))
   }
 
   test("pairs") {
