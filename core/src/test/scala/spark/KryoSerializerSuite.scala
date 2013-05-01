@@ -83,7 +83,7 @@ class KryoSerializerSuite extends FunSuite {
   }
 
   test("custom registrator") {
-    import spark.test._
+    import KryoTest._
     System.setProperty("spark.kryo.registrator", classOf[MyRegistrator].getName)
 
     val ser = (new KryoSerializer).newInstance()
@@ -108,30 +108,30 @@ class KryoSerializerSuite extends FunSuite {
   }
 }
 
-package test {
-case class CaseClass(i: Int, s: String) {}
+object KryoTest {
+  case class CaseClass(i: Int, s: String) {}
 
-class ClassWithNoArgConstructor {
-  var x: Int = 0
-  override def equals(other: Any) = other match {
-    case c: ClassWithNoArgConstructor => x == c.x
-    case _ => false
+  class ClassWithNoArgConstructor {
+    var x: Int = 0
+    override def equals(other: Any) = other match {
+      case c: ClassWithNoArgConstructor => x == c.x
+      case _ => false
+    }
   }
-}
 
-class ClassWithoutNoArgConstructor(val x: Int) {
-  override def equals(other: Any) = other match {
-    case c: ClassWithoutNoArgConstructor => x == c.x
-    case _ => false
+  class ClassWithoutNoArgConstructor(val x: Int) {
+    override def equals(other: Any) = other match {
+      case c: ClassWithoutNoArgConstructor => x == c.x
+      case _ => false
+    }
   }
-}
 
-class MyRegistrator extends KryoRegistrator {
-  override def registerClasses(k: Kryo) {
-    k.register(classOf[CaseClass])
-    k.register(classOf[ClassWithNoArgConstructor])
-    k.register(classOf[ClassWithoutNoArgConstructor])
-    k.register(classOf[java.util.HashMap[_, _]])
+  class MyRegistrator extends KryoRegistrator {
+    override def registerClasses(k: Kryo) {
+      k.register(classOf[CaseClass])
+      k.register(classOf[ClassWithNoArgConstructor])
+      k.register(classOf[ClassWithoutNoArgConstructor])
+      k.register(classOf[java.util.HashMap[_, _]])
+    }
   }
-}
 }

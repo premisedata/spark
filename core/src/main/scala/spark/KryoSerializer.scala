@@ -2,10 +2,10 @@ package spark
 
 import java.io._
 import java.nio.ByteBuffer
-import com.twitter.chill.KryoBijection
 import com.esotericsoftware.kryo.{Kryo, KryoException}
 import com.esotericsoftware.kryo.io.{Input => KryoInput, Output => KryoOutput}
 import com.esotericsoftware.kryo.serializers.{JavaSerializer => KryoJavaSerializer}
+import com.twitter.chill.KryoBijection
 import serializer.{SerializerInstance, DeserializationStream, SerializationStream}
 import spark.broadcast._
 import spark.storage._
@@ -117,7 +117,7 @@ class KryoSerializer extends spark.serializer.Serializer with Logging {
         logInfo("Running user registrator: " + regCls)
         val reg = Class.forName(regCls, true, classLoader).newInstance().asInstanceOf[KryoRegistrator]
         reg.registerClasses(kryo)
-}
+      }
     } catch {
       case _: Exception => println("Failed to register spark.kryo.registrator")
     }
