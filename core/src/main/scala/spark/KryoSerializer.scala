@@ -41,9 +41,9 @@ private[spark] class KryoDeserializationStream(kryo: Kryo, inStream: InputStream
 }
 
 private[spark] class KryoSerializerInstance(ks: KryoSerializer) extends SerializerInstance {
-  val kryo = ks.kryo.get()
-  val output = ks.output.get()
-  val input = ks.input.get()
+  val kryo = ks.newKryo()
+  val output = ks.newKryoOutput()
+  val input = ks.newKryoInput()
 
   def serialize[T](t: T): ByteBuffer = {
     output.clear()
@@ -88,17 +88,9 @@ trait KryoRegistrator {
 class KryoSerializer extends spark.serializer.Serializer with Logging {
   private val bufferSize = System.getProperty("spark.kryoserializer.buffer.mb", "2").toInt * 1024 * 1024
 
-  val kryo = new ThreadLocal[Kryo] {
-    override def initialValue = newKryo()
-  }
+  def newKryoOutput() = new KryoOutput(bufferSize)
 
-  val output = new ThreadLocal[KryoOutput] {
-    override def initialValue = new KryoOutput(bufferSize)
-  }
-
-  val input = new ThreadLocal[KryoInput] {
-    override def initialValue = new KryoInput(bufferSize)
-  }
+  def newKryoInput() = new KryoInput(bufferSize)
 
   def newKryo(): Kryo = {
     val kryo = KryoBijection.getKryo
@@ -122,7 +114,7 @@ class KryoSerializer extends spark.serializer.Serializer with Logging {
     // Allow the user to register their own classes by setting spark.kryo.registrator
     try {
       Option(System.getProperty("spark.kryo.registrator")).foreach { regCls =>
-        logInfo("Running user registrator: " + regCls)
+        logDebug("Running user registrator: " + regCls)
         val reg = Class.forName(regCls, true, classLoader).newInstance().asInstanceOf[KryoRegistrator]
         reg.registerClasses(kryo)
       }
