@@ -87,16 +87,16 @@ object SparkBuild extends Build {
       </developers>
     ),
 
-/*
-    publishTo <<= version { (v: String) =>
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
-        Some("sonatype-snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("sonatype-staging"  at nexus + "service/local/staging/deploy/maven2")
-    },
-
-*/
+    // Publish to premise public artifactory
+    credentials += Credentials(Path.userHome / ".ivy2" / "credentials"),
+    resolvers ++= Seq(
+      "premise-snapshots" at "https://premise.artifactoryonline.com/premise/public-snapshots-local",
+      "premise"           at "https://premise.artifactoryonline.com/premise/public-local"
+    ),
+    publishTo <<= version { (v: String) => Some(v.trim.endsWith("SNAPSHOT") match {
+      case true  => "premise-snapshots" at "https://premise.artifactoryonline.com/premise/public-snapshots-local"
+      case false => "premise"           at "https://premise.artifactoryonline.com/premise/public-local"
+    })},
 
     libraryDependencies ++= Seq(
       "org.eclipse.jetty" % "jetty-server" % "7.6.8.v20121106",
